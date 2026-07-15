@@ -1,0 +1,23 @@
+name: nightly-signal-fetch
+on:
+  schedule:
+    - cron: "20 9 * * *"   # 09:20 UTC daily
+  workflow_dispatch: {}      # manual run button
+permissions:
+  contents: write
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install requests
+      - run: cd fetchers && python run_all.py
+      - name: commit if changed
+        run: |
+          git config user.name "addint-bot"
+          git config user.email "bot@addint"
+          git add site/signals.js
+          git diff --cached --quiet || git commit -m "signals: nightly fetch $(date -u +%F)"
+          git push

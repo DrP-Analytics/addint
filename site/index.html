@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ADDINT — Addiction Intelligence</title>
+<meta name="description" content="Open-source addiction intelligence: curated, geography-filtered alerts on the changing US street drug supply, written for clinicians.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0e13; --bg2:#0e141b; --card:#111924; --card2:#0d141d;
+    --line:rgba(255,255,255,.07); --line2:rgba(255,255,255,.13);
+    --ink:#e8edf2; --ink2:#8fa0b3; --ink3:#5c6b7c;
+    --accent:#ff5e3a; --accent-soft:rgba(255,94,58,.12);
+    --alert:#ff4d4d; --alert-soft:rgba(255,77,77,.10);
+    --watch:#ffb340; --watch-soft:rgba(255,179,64,.09);
+    --info:#4da3ff; --info-soft:rgba(77,163,255,.09);
+    --mono:'JetBrains Mono',monospace; --disp:'Space Grotesk',sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:'Inter',system-ui,sans-serif;line-height:1.55;
+    background-image:radial-gradient(ellipse 80% 50% at 50% -10%, rgba(255,94,58,.08), transparent),
+                     radial-gradient(ellipse 60% 40% at 90% 0%, rgba(77,163,255,.05), transparent)}
+  a{color:var(--info)}
+  .wrap{max-width:880px;margin:0 auto;padding:0 24px}
+
+  header{padding:64px 0 40px;position:relative}
+  .kicker{font-family:var(--mono);font-size:12px;letter-spacing:3px;color:var(--accent);text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:10px}
+  .kicker::before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--accent);animation:pulse 2.2s infinite}
+  @keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(255,94,58,.5)}50%{opacity:.6;box-shadow:0 0 0 7px rgba(255,94,58,0)}}
+  .logo{font-family:var(--disp);font-size:clamp(52px,9vw,86px);font-weight:700;letter-spacing:-2px;line-height:.95;margin:0}
+  .logo em{font-style:normal;color:var(--accent)}
+  .tagline{font-size:17px;color:var(--ink2);max-width:600px;margin-top:18px}
+  .tagline b{color:var(--ink);font-weight:600}
+  .statrow{display:flex;gap:36px;margin-top:34px;flex-wrap:wrap}
+  .stat{font-family:var(--mono)}
+  .stat .n{font-size:26px;font-weight:600;color:var(--ink)}
+  .stat .l{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--ink3);margin-top:2px}
+
+  .bar{position:sticky;top:0;z-index:20;background:rgba(10,14,19,.82);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .bar-inner{max-width:880px;margin:0 auto;padding:12px 24px;display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+  .bar label{font-family:var(--mono);font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--ink3)}
+  #statePick{background:var(--card);color:var(--ink);border:1px solid var(--line2);border-radius:10px;padding:8px 12px;font:500 14px 'Inter',sans-serif;cursor:pointer;outline:none}
+  #statePick:hover{border-color:var(--accent)}
+  .spacer{flex:1}
+  .sevbtn{font:500 13px 'Inter',sans-serif;background:transparent;border:1px solid var(--line2);color:var(--ink2);border-radius:99px;padding:7px 16px;cursor:pointer;transition:all .18s}
+  .sevbtn:hover{border-color:var(--ink2);color:var(--ink)}
+  .sevbtn.on{background:var(--accent);border-color:var(--accent);color:#fff}
+  .sevbtn.on:hover{background:#ff7052}
+
+  main{max-width:880px;margin:44px auto 0;padding:0 24px}
+  .card{position:relative;background:linear-gradient(180deg,var(--card),var(--card2));border:1px solid var(--line);border-radius:18px;padding:26px 28px 22px;margin-bottom:22px;transition:transform .22s,border-color .22s,box-shadow .22s;overflow:hidden}
+  .card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px}
+  .card:hover{transform:translateY(-3px);border-color:var(--line2);box-shadow:0 18px 50px -18px rgba(0,0,0,.7)}
+  .card.alert::before{background:var(--alert);box-shadow:0 0 18px rgba(255,77,77,.55)}
+  .card.watch::before{background:var(--watch);box-shadow:0 0 18px rgba(255,179,64,.45)}
+  .card.info::before{background:var(--info);box-shadow:0 0 18px rgba(77,163,255,.45)}
+  .meta{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:14px}
+  .sev{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:2.5px;border-radius:7px;padding:4px 12px}
+  .sev.alert{background:var(--alert-soft);color:var(--alert);border:1px solid rgba(255,77,77,.25)}
+  .sev.watch{background:var(--watch-soft);color:var(--watch);border:1px solid rgba(255,179,64,.25)}
+  .sev.info{background:var(--info-soft);color:var(--info);border:1px solid rgba(77,163,255,.25)}
+  .date{font-family:var(--mono);color:var(--ink3);font-size:12px;letter-spacing:1px}
+  .loc{font-family:var(--mono);font-size:11px;letter-spacing:1.5px;background:rgba(255,255,255,.05);color:var(--ink2);border:1px solid var(--line);border-radius:7px;padding:4px 12px}
+  .loc.mine{background:var(--accent-soft);color:var(--accent);border-color:rgba(255,94,58,.3)}
+  h2{font-family:var(--disp);font-size:23px;font-weight:600;letter-spacing:-.3px;margin:0 0 14px;line-height:1.25}
+  .lbl{font-family:var(--mono);font-size:10.5px;font-weight:600;letter-spacing:3px;color:var(--ink3);margin:16px 0 6px}
+  .lbl.hot{color:var(--accent)}
+  .card p{margin:0;font-size:15px;color:var(--ink2)}
+  .sowhat{background:rgba(255,94,58,.05);border:1px solid rgba(255,94,58,.14);border-radius:12px;padding:14px 16px;color:var(--ink)!important}
+  .pillrow{display:flex;flex-wrap:wrap;gap:7px;margin-top:16px}
+  .subst{font-family:var(--mono);font-size:11.5px;background:rgba(77,163,255,.08);color:var(--info);border:1px solid rgba(77,163,255,.18);border-radius:99px;padding:3px 12px}
+  .src{margin-top:16px;padding-top:14px;border-top:1px solid var(--line);font-size:13px;color:var(--ink3)}
+  .src a{color:var(--ink2);text-decoration:none;transition:color .15s}
+  .src a:hover{color:var(--accent)}
+  .src a::after{content:" ↗";font-size:11px}
+  .empty{color:var(--ink3);text-align:center;padding:60px 0;font-family:var(--mono);letter-spacing:1px}
+
+  .sigbox{max-width:880px;margin:8px auto 0;padding:0 24px}
+  details{background:var(--card2);border:1px solid var(--line);border-radius:16px;padding:18px 22px}
+  summary{cursor:pointer;font-family:var(--disp);font-weight:500;font-size:15px;color:var(--ink2);list-style:none;display:flex;align-items:center;gap:10px}
+  summary::before{content:"▸";color:var(--accent);transition:transform .2s}
+  details[open] summary::before{transform:rotate(90deg)}
+  summary:hover{color:var(--ink)}
+  .stamp{font-family:var(--mono);font-size:11px;color:var(--ink3);letter-spacing:1px;font-weight:400}
+  .signote{font-size:12.5px;color:var(--ink3);margin:10px 0 4px}
+  .sig{padding:10px 0;border-top:1px solid var(--line);font-size:13.5px}
+  .sig .sm{font-family:var(--mono);color:var(--ink3);font-size:11px;letter-spacing:1px}
+  .sig a{color:var(--ink2);text-decoration:none}
+  .sig a:hover{color:var(--info)}
+
+  footer{max-width:880px;margin:56px auto 60px;padding:28px 24px 0;color:var(--ink3);font-size:13px;line-height:1.7;border-top:1px solid var(--line)}
+  footer b{color:var(--ink2)}
+  .creed{font-family:var(--mono);font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--ink3);margin-top:22px;display:flex;gap:18px;flex-wrap:wrap}
+  .creed span::before{content:"● ";color:var(--accent);font-size:8px;vertical-align:2px}
+  @media (max-width:640px){ h2{font-size:19px} .card{padding:20px} header{padding:44px 0 30px} }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="kicker">Live supply intelligence · open source</div>
+    <h1 class="logo">ADD<em>INT</em></h1>
+    <p class="tagline"><b>What's in the street drug supply, where it is, and what it changes at the bedside.</b> Machine-fed from public surveillance. Curated by Dr. P. Written for the clinician with ninety seconds.</p>
+    <div class="statrow">
+      <div class="stat"><div class="n" id="stAlert">–</div><div class="l">Active alerts</div></div>
+      <div class="stat"><div class="n" id="stWatch">–</div><div class="l">Watchlist</div></div>
+      <div class="stat"><div class="n" id="stSrc">14+</div><div class="l">Source systems</div></div>
+      <div class="stat"><div class="n">$0</div><div class="l">Forever</div></div>
+    </div>
+  </div>
+</header>
+<div class="bar">
+  <div class="bar-inner">
+    <label for="statePick">My state</label>
+    <select id="statePick"></select>
+    <span class="spacer"></span>
+    <button class="sevbtn on" data-sev="alert">Alerts</button>
+    <button class="sevbtn on" data-sev="watch">Watchlist</button>
+    <button class="sevbtn on" data-sev="info">Context</button>
+  </div>
+</div>
+<main id="cards"></main>
+<section class="sigbox">
+  <details>
+    <summary>Raw signal feed — uncurated, auto-fetched <span class="stamp" id="sigStamp"></span></summary>
+    <p class="signote">Machine-collected items from public feeds (Federal Register, openFDA, and growing). Not reviewed; most are routine. The curated cards above are what matter clinically.</p>
+    <div id="sigList"></div>
+  </details>
+</section>
+<footer>
+  <b>What ADDINT is:</b> a physician-curated translation layer over public drug-supply surveillance (CFSRE NPS Discovery, EUDA, CDC, SAMHSA, NDEWS, and others). Every card links its primary source. Signals from online discussion alone are never promoted to alerts without physical (laboratory) corroboration.<br><br>
+  <b>What it is not:</b> a complete epidemiological picture (drug-checking samples are self-selected), a substitute for your health department, poison center, or clinical judgment — or a source of information about obtaining any substance.
+  <div class="creed"><span>No accounts</span><span>No tracking</span><span>Free forever</span><span><a href="https://github.com/" style="color:inherit;text-decoration:none">Source on GitHub</a></span></div>
+</footer>
+<script src="alerts.js"></script>
+<script src="signals.js"></script>
+<script>
+const STATES = ["US — national view","AL","AK","AZ","AR","CA","CO","CT","DE","DC","FL","GA","HI","ID","IL","IN","IA","KS","KY","LA","ME","MD","MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK","OR","PA","RI","SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY"];
+const pick = document.getElementById('statePick');
+STATES.forEach(s=>{const o=document.createElement('option');o.value=s.slice(0,2);o.textContent=s;pick.appendChild(o);});
+let myState = localStorage.getItem('addint_state') || 'US';
+pick.value = myState;
+
+let sevOn = {alert:true, watch:true, info:true};
+
+function relevant(a){
+  if (a.where.includes('INTL')) return true;
+  if (a.where.includes('US')) return true;
+  if (myState === 'US') return true;
+  return a.where.includes(myState);
+}
+function localBadge(a){
+  if (myState !== 'US' && a.where.includes(myState)) return '<span class="loc mine">YOUR STATE</span>';
+  if (a.where.includes('INTL')) return '<span class="loc">APPROACHING · INTL</span>';
+  return '<span class="loc">'+a.where.join(' · ')+'</span>';
+}
+function render(){
+  const root = document.getElementById('cards');
+  const vis = ALERTS.filter(a=>relevant(a));
+  document.getElementById('stAlert').textContent = vis.filter(a=>a.severity==='alert').length;
+  document.getElementById('stWatch').textContent = vis.filter(a=>a.severity==='watch').length;
+  const items = vis.filter(a=>sevOn[a.severity])
+    .sort((x,y)=> (x.severity==='alert'?0:x.severity==='watch'?1:2) - (y.severity==='alert'?0:y.severity==='watch'?1:2) || y.date.localeCompare(x.date));
+  if(!items.length){ root.innerHTML = '<div class="empty">NO CURRENT ITEMS FOR THIS VIEW</div>'; return; }
+  root.innerHTML = items.map(a=>`
+    <article class="card ${a.severity}">
+      <div class="meta">
+        <span class="sev ${a.severity}">${a.severity==='alert'?'ALERT':a.severity==='watch'?'WATCH':'CONTEXT'}</span>
+        <span class="date">${a.date}</span>
+        ${localBadge(a)}
+      </div>
+      <h2>${a.title}</h2>
+      <div class="lbl">What</div><p>${a.what}</p>
+      <div class="lbl hot">So what — at the bedside</div><p class="sowhat">${a.soWhat}</p>
+      ${a.substances.length?`<div class="pillrow">${a.substances.map(s=>`<span class="subst">${s}</span>`).join('')}</div>`:''}
+      <div class="src">Source: <a href="${a.source.url}" target="_blank" rel="noopener">${a.source.name}</a></div>
+    </article>`).join('');
+}
+pick.onchange = ()=>{ myState = pick.value; localStorage.setItem('addint_state', myState); render(); };
+document.querySelectorAll('.sevbtn').forEach(b=>b.onclick=()=>{ sevOn[b.dataset.sev]=!sevOn[b.dataset.sev]; b.classList.toggle('on'); render(); });
+render();
+
+if (typeof SIGNALS !== 'undefined'){
+  document.getElementById('sigStamp').textContent = '· updated ' + SIGNALS_UPDATED;
+  document.getElementById('sigList').innerHTML = SIGNALS.length
+    ? SIGNALS.slice(0,50).map(s=>`<div class="sig">
+        <span class="sm">${s.date} · ${s.source}</span><br>
+        <a href="${s.url}" target="_blank" rel="noopener">${s.title}</a>
+        ${s.note?`<span class="sm"> — ${s.note}</span>`:''}
+      </div>`).join('')
+    : '<p class="signote">No signals yet — the nightly fetcher hasn\'t run.</p>';
+}
+</script>
+</body>
+</html>
