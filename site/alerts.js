@@ -5,7 +5,7 @@ const ALERTS = [
 {
   id: "2026-07-medetomidine",
   date: "2026-07-12",
-  severity: "alert",
+  severity: "watch",
   title: "Medetomidine has largely displaced xylazine in the fentanyl supply",
   what: "CFSRE drug-checking data show xylazine positivity in fentanyl samples fell from 97% to 21% between Q1 2024 and Q4 2025, while medetomidine rose from negligible to 88%. First flagged in Chicago and Philadelphia; now the dominant alpha-2 adulterant nationally.",
   soWhat: "Expect profound bradycardia and hypotension unresponsive to naloxone (the opioid component still responds — give it). Anticipate a distinct withdrawal syndrome resembling dexmedetomidine withdrawal (autonomic instability, hypertension, agitation); alpha-2 agonist tapers have been used. Xylazine test strips do not detect medetomidine.",
@@ -16,7 +16,7 @@ const ALERTS = [
 {
   id: "2026-07-orphines",
   date: "2026-07-12",
-  severity: "alert",
+  severity: "watch",
   title: "New opioid class ('orphines', incl. N-propionitrile chlorphine) in fatal overdoses",
   what: "Following China's July 2025 class-wide nitazene ban, orphine-class synthetic opioids have appeared in the US supply. CFSRE has identified N-propionitrile chlorphine (cychlorphine) in 25 fatal-overdose blood specimens, most from late 2025 to early 2026, with orphine positivity now rising as nitazene positivity falls.",
   soWhat: "Treat as high-potency opioid: naloxone works but repeated or higher dosing may be needed; observe longer. Fentanyl test strips will NOT detect orphines — a negative strip does not mean a safe or fentanyl-free product. Send comprehensive toxicology when unusual overdoses cluster.",
