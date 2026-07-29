@@ -36,4 +36,8 @@ ADDINT is an informational surveillance summary, not medical advice and not a
 substitute for local health department guidance, poison control, or clinical
 judgment.
 
-Maintained by Dr. P.
+## Maintainer
+
+ADDINT is built and curated by **Shanli Parnia, MD** — a physician board-certified in Addiction Medicine (ABPM, 2025), Internal Medicine (ABIM, 2022), and Obesity Medicine (ABOM, 2023), practicing at Loretto Hospital, a safety-net community hospital in Chicago, where she oversees the inpatient detoxification service. Her published work on emerging substances includes a systematic review of xylazine in the opioid epidemic (*Cureus*, 2023) and a systematic review and post-hoc analysis of tianeptine (*BMC Public Health*, in press).
+
+More at [addint.org/site/about.html](https://addint.org/site/about.html).

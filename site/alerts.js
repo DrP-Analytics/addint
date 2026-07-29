@@ -1,4 +1,4 @@
-// ADDINT curated alerts — edited by the physician curator. Newest first.
+// ADDINT curated alerts — edited by Shanli Parnia, MD (physician curator). Newest first.
 // severity: "alert" (management changes now) | "watch" (corroborated, monitor) | "info" (context)
 // where: state codes, "US" (national), or "INTL" (approaching / international signal)
 const ALERTS = [
